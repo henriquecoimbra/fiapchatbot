@@ -1,26 +1,27 @@
 package br.com.fiap.am.testes;
 
-import br.com.fiap.am.jdbc.ConnectionPoolOracle;
-
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+
+import br.com.fiap.factory.ConnectionFactorySQL;
 
 public class ConnectionJDBC {
 
 	public static void main(String[] args) throws SQLException {
-		Connection connection = new ConnectionPoolOracle().getConnection();
-		Statement statement = connection.createStatement();
-		statement.execute("SELECT * FROM t_a14_autor");
-		ResultSet resultSet = statement.getResultSet();
-		
-		while (resultSet.next()) {
-			System.out.println(resultSet.getString("NM_AUTOR"));
+		String sql = "SELECT * FROM DEMO_USERS WHERE USER_NAME = ?";
+		try (Connection con = new ConnectionFactorySQL().getConnection();
+				PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1, "asda");
+			try (ResultSet result = ps.executeQuery()) {
+				while (result.next()) {
+					System.out.print(result.getString("USER_NAME") + " ");
+					System.out.println(result.getDate("CREATED_ON"));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		
-		resultSet.close();
-		statement.close();
-		connection.close();
 	}
 }
