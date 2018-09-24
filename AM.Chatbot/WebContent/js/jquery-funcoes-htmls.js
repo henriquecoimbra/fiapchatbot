@@ -4,7 +4,9 @@ $('document').ready(function() {
 			event.preventDefault();
 
 			var txtPergunta = $('input[name=minhapergunta]').val();
-
+			if(txtPergunta == "")
+				return;
+			
 			var formData = {
 				'minhapergunta' : txtPergunta
 			};

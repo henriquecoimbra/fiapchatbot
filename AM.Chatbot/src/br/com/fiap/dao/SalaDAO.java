@@ -80,4 +80,37 @@ public class SalaDAO {
 		}
 	}
 
+	public Retorno disponibilidadeCapacidadeMax(MessageResponse resp, String dateBooking, String numberPeople) throws SQLException {
+		Retorno retorno = new Retorno(404, "Não existe salas disponíveis para essa quantidade de pessoas.", "");
+
+		String sql =	"SELECT qt_capacidade " + 
+						"FROM   (SELECT s.cd_sala, " + 
+						"Trunc(rs.dt_entrada), " + 
+						"SUM(Round(( dt_saida - dt_entrada ) * 1440.0) / 30) total_cliclos " + 
+						"FROM   t_r10_sala s " + 
+						"left join t_r10_reserva_sala rs " + 
+						"ON s.cd_sala = rs.cd_sala " + 
+						"WHERE  Trunc(rs.dt_entrada) = To_char(DATE '"+ dateBooking +"', 'DD/MM/YYYY') " + 
+						"GROUP  BY s.cd_sala, " + 
+						"Trunc(rs.dt_entrada)) A " + 
+						"right join t_r10_sala S " + 
+						"ON S.cd_sala = A.cd_sala " + 
+						"WHERE  A.total_cliclos < 48 " + 
+						"OR A.total_cliclos IS NULL AND rownum = 1 "+ 
+						"ORDER BY S.qt_capacidade";
+		try (Connection con = new ConnectionFactorySQL().getConnection();
+				PreparedStatement ps = con.prepareStatement(sql)) {			
+			try (ResultSet result = ps.executeQuery()) {				
+				while (result.next()) {			
+					int qt_capacidade = result.getInt("QT_CAPACIDADE");					
+					retorno.setMsgRetorno(retorno.getMsgRetorno() + " Capacidade máxima disponível é para " + qt_capacidade + " pessoas");
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return retorno;
+		}
+	}
+
 }

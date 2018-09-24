@@ -56,6 +56,7 @@ public class WatsonConnection extends HttpServlet {
 		}
 
 		resp = conversationAPI(pergunta, context);
+		System.out.println(resp);
 		context = resp.getContext();
 
 		retorno = new WatsonBO().WatsonBrain(resp, pergunta);

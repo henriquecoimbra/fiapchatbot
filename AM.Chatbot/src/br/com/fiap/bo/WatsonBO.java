@@ -32,6 +32,12 @@ public class WatsonBO {
 			case "reserva3":
 				retorno = new SalaBO().disponibilidadeCapacidade(resp, pergunta);
 				break;
+			case "reserva4":
+				json = String.format("{ \"pergunta\": \"" + pergunta + "\", \"resposta\":  [\"" + "%s" + "\"]}",
+						resp.getOutput().getText().get(0));
+				retorno.setJson(json);
+				System.out.println(4);
+				break;
 			default:
 				json = String.format("{ \"pergunta\": \"" + pergunta + "\", \"resposta\":  [\"" + "%s" + "\"]}",
 						resp.getOutput().getText().get(0));
